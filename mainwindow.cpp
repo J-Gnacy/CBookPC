@@ -6,6 +6,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ingredientUnitComboBox = qobject_cast<QComboBox*>(ui->ingredientUnitComboBox);
+    PrepareComboBox(ingredientUnitComboBox);
+    ingredientAmountSpinBox=qobject_cast<QSpinBox*>(ui->ingredientAmountSpinBox);
+    ingredientNameText=qobject_cast<QTextEdit*>(ui->ingredientNameText);
 
 
 }
@@ -22,11 +26,14 @@ void MainWindow::on_addIngredient_clicked()
 
     QHBoxLayout* ingredientLayout=new QHBoxLayout();
 
-    QTextEdit* ingredientName=new QTextEdit("Nazwa składnika");
-    QSpinBox* ingredientAmount=new QSpinBox();
-    QComboBox* ingredientUnit=new QComboBox();
+    QTextEdit* ingredientName=new QTextEdit(ingredientNameText->toPlainText());
 
-    ingredientUnit->addItem("kek");
+    QSpinBox* ingredientAmount=new QSpinBox();
+    ingredientAmount->setValue(ingredientAmountSpinBox->value());
+
+    QComboBox* ingredientUnit=new QComboBox();
+    PrepareComboBox(ingredientUnit);
+    ingredientUnit->setCurrentIndex(ingredientUnitComboBox->currentIndex());
 
     ingredientName->setFixedSize(100,50);
     ingredientLayout->addWidget(ingredientName);
@@ -35,5 +42,13 @@ void MainWindow::on_addIngredient_clicked()
 
     layout->addLayout(ingredientLayout);
 
+}
+
+void MainWindow::PrepareComboBox(QComboBox* comboBox)
+{
+    comboBox->addItem("g");
+    comboBox->addItem("kg");
+    comboBox->addItem("l");
+    comboBox->addItem("ml");
 }
 

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QTextEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,5 +23,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QComboBox* ingredientUnitComboBox=nullptr;
+    QSpinBox* ingredientAmountSpinBox=nullptr;
+    QTextEdit* ingredientNameText=nullptr;
+    void PrepareComboBox(QComboBox* comboBox);
 };
 #endif // MAINWINDOW_H
