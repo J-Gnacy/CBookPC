@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QTextEdit>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,6 +27,8 @@ private:
     QComboBox* ingredientUnitComboBox=nullptr;
     QSpinBox* ingredientAmountSpinBox=nullptr;
     QTextEdit* ingredientNameText=nullptr;
+    QLabel* recipeAmountLabel=nullptr;
+    QLabel* recipeNameLabel=nullptr;
     void PrepareComboBox(QComboBox* comboBox);
 };
 #endif // MAINWINDOW_H

@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "recipe.h"
+#include "ingredient.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -10,6 +12,12 @@ MainWindow::MainWindow(QWidget *parent)
     PrepareComboBox(ingredientUnitComboBox);
     ingredientAmountSpinBox=qobject_cast<QSpinBox*>(ui->ingredientAmountSpinBox);
     ingredientNameText=qobject_cast<QTextEdit*>(ui->ingredientNameText);
+
+    recipeAmountLabel=qobject_cast<QLabel*>(ui->recipeAmountLabel);
+    recipeNameLabel=qobject_cast<QLabel*>(ui->recipeNameLabel);
+
+    Recipe defaultRecipe(1000, "Przykładowy przepis", Unit::g);
+    recipeNameLabel->setText(defaultRecipe.GetName());
 
 
 }
@@ -35,7 +43,7 @@ void MainWindow::on_addIngredient_clicked()
     PrepareComboBox(ingredientUnit);
     ingredientUnit->setCurrentIndex(ingredientUnitComboBox->currentIndex());
 
-    ingredientName->setFixedSize(100,50);
+    ingredientName->setFixedSize(100,30);
     ingredientLayout->addWidget(ingredientName);
     ingredientLayout->addWidget(ingredientAmount);
     ingredientLayout->addWidget(ingredientUnit);
