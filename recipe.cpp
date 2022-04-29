@@ -1,10 +1,10 @@
 #include "recipe.h"
 
-void Recipe::AddIngredient(QString name, float amount, Unit unitUsed)
+void Recipe::AddIngredient(QString name, float amount, Unit unitUsed, QPushButton* key)
 {
 
     Ingredient* newIngredient = new Ingredient(name, amount, unitUsed);
-    IngredientList.push_back(newIngredient);
+    IngredientList.insert(key, newIngredient);
 
 
 }
@@ -30,9 +30,10 @@ void Recipe::RecalculateRecipe(float newAmount)
 
 void Recipe::ForEachIngredient(const std::function<void(Ingredient*)>& func)
 {
-    for (int i = 0; i < IngredientList.size(); i++)
+    QMap<QPushButton*, Ingredient*>::const_iterator i = IngredientList.constBegin();
+    while (i != IngredientList.constEnd())
     {
-        func(IngredientList[i]);
+        func(i.value());
     }
 }
 
@@ -41,7 +42,7 @@ float Recipe::GetAmount()
     return recipeDesiredAmount;
 }
 
-std::vector<Ingredient*> Recipe::GetIngredientList()
+QMap<QPushButton*, Ingredient*> Recipe::GetIngredientList()
 {
     return IngredientList;
 }
@@ -59,5 +60,15 @@ Recipe::~Recipe()
 QString Recipe::GetName()
 {
     return recipeName;
+}
+
+Unit Recipe::GetUnit()
+{
+    return recipeUnit;
+}
+
+void Recipe::DeleteIngredientByKey(QPushButton* key)
+{
+    delete IngredientList.find(key).value();
 }
 

@@ -4,7 +4,7 @@
 #include <QObject>
 
 
-enum class Unit { g, kg, l, ml };
+enum class Unit { g, kg, l, ml, szt };
 
 class Ingredient
 {
@@ -15,11 +15,7 @@ private:
        float amount;
        Unit usedUnit;
 
-       Ingredient(QString newName, float newAmount, Unit newUnit)
-           : name(newName), amount(newAmount), usedUnit(newUnit){}
 
-       Ingredient(Ingredient* ingredient)
-           : name(ingredient->name), amount(ingredient->amount), usedUnit(ingredient->usedUnit){}
 
 public:
     QString GetName();
@@ -29,6 +25,12 @@ public:
     float GetAmount();
 
     Unit GetUnit();
+
+    Ingredient(QString newName, float newAmount, Unit newUnit)
+        : name(newName), amount(newAmount), usedUnit(newUnit){}
+
+    Ingredient(Ingredient* ingredient)
+        : name(ingredient->name), amount(ingredient->amount), usedUnit(ingredient->usedUnit){}
 };
 
 #endif // INGREDIENT_H

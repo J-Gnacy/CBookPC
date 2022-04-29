@@ -6,6 +6,14 @@
 #include <QSpinBox>
 #include <QTextEdit>
 #include <QLabel>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QScrollArea>
+#include <QScrollBar>
+#include "recipe.h"
+#include "ingredient.h"
+#include <vector>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,13 +30,28 @@ public:
 private slots:
     void on_addIngredient_clicked();
 
+    void on_ExitButton_clicked();
+
+    void on_recalculateButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    QMap<QPushButton*, QHBoxLayout*> deleteButtonToIngredientLayoutMap;
     QComboBox* ingredientUnitComboBox=nullptr;
     QSpinBox* ingredientAmountSpinBox=nullptr;
     QTextEdit* ingredientNameText=nullptr;
     QLabel* recipeAmountLabel=nullptr;
     QLabel* recipeNameLabel=nullptr;
+    QComboBox* recipeUnitCBox=nullptr;
+    QComboBox* newRecipeUnitCBox=nullptr;
+    QScrollArea* scrollArea=nullptr;
+    QVBoxLayout* recipeLayout=nullptr;
+    QSpinBox* recalculateSpinBox=nullptr;
+    QComboBox* recalculateUnitCBox=nullptr;
+
     void PrepareComboBox(QComboBox* comboBox);
+    void DeleteIngredient();
+    Unit GetUnitFromCBox(QComboBox* comboBox);
+
 };
 #endif // MAINWINDOW_H
