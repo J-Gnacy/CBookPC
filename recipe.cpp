@@ -69,6 +69,36 @@ Unit Recipe::GetUnit()
 
 void Recipe::DeleteIngredientByKey(QPushButton* key)
 {
-    delete IngredientList.find(key).value();
+    IngredientList.remove(key);
+}
+
+void Recipe::RefreshIngredients(QMap<QPushButton*, QHBoxLayout*> OtherMap)
+{
+
+    QPushButton keyButton;
+
+    QMap<QPushButton*, QHBoxLayout*>::const_iterator i = OtherMap.constBegin();
+    while (i != OtherMap.constEnd())
+    {
+      QHBoxLayout* layout = i.value();
+      int currentItemIndex=0;
+      while(currentItemIndex != layout->count())
+      {
+          QWidget* item = layout->takeAt(0)->widget();
+          if (QSpinBox* spinBox = qobject_cast<QSpinBox*>(item))
+              spinBox->setValue(0);
+
+          currentItemIndex++;
+      }
+
+        ++i;
+    }
+
+
+}
+
+void Recipe::ClearIngredientsList()
+{
+    IngredientList.clear();
 }
 

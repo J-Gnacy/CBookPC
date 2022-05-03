@@ -8,6 +8,8 @@
 #include <vector>
 #include <QPushButton>
 #include <QMap>
+#include <QSpinBox>
+#include <QBoxLayout>
 
 class Recipe
 {
@@ -53,6 +55,11 @@ public:
     QMap<QPushButton*, Ingredient*> GetIngredientList();
 
     ~Recipe();
+
+    void RefreshIngredients(QMap<QPushButton*, QHBoxLayout*> OtherMap);
+
+    void ClearIngredientsList();
+
 };
 
 #endif // RECIPE_H

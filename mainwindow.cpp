@@ -47,6 +47,16 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    QMap<QPushButton*, QHBoxLayout*>::const_iterator i = deleteButtonToIngredientLayoutMap.constBegin();
+        while (i != deleteButtonToIngredientLayoutMap.constEnd())
+        {
+          ClearLayout(i.value());
+          i++;
+        }
+
+    deleteButtonToIngredientLayoutMap.clear();
+    currentRecipe.ClearIngredientsList();
+
     delete ui;
     delete ingredientUnitComboBox;
     delete ingredientAmountSpinBox;
@@ -57,6 +67,9 @@ MainWindow::~MainWindow()
     delete newRecipeUnitCBox;
     delete scrollArea;
     delete recipeLayout;
+    delete recalculateSpinBox;
+    delete recalculateUnitCBox;
+
 
 
 }
@@ -119,42 +132,13 @@ void MainWindow::DeleteIngredient()
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QHBoxLayout* layout = deleteButtonToIngredientLayoutMap.take(button);
 
-    while (layout->count() != 0)
-    {
-        QLayoutItem* item = layout->takeAt(0);
-        delete item->widget();
-        delete item;
-    }
-    delete layout;
+    ClearLayout(layout);
 
     currentRecipe.DeleteIngredientByKey(button);
     deleteButtonToIngredientLayoutMap.remove(button);
-   // int index=KeyIndexList.indexOf(button);
-   // recipeAmountLabel->setText(QString::number(index));
-   // KeyIndexList.removeAt(index);
-
-
-
-  //  int index=std::distance(deleteButtonToIngredientLayoutMap.constBegin(),deleteButtonToIngredientLayoutMap.constFind(button));
-
- /*   deleteButtonToIngredientLayoutMap.constFind(button);
-    recipeAmountLabel->setText(QString::number(index)); */
-   /* auto list=currentRecipe.GetIngredientList();
-    currentRecipe.DeleteIngredient(list[index]); */
 
 }
 
-
-/*void MainWindow::on_recalculateButton_clicked()
-{
-   QHash<QPushButton*, QHBoxLayout*>::const_iterator i = deleteButtonToIngredientLayoutMap.constBegin();
-   while (i != deleteButtonToIngredientLayoutMap.constEnd())
-   {
-     QHBoxLayout* layout = i.value();
-     QLayoutItem* item = layout->takeAt(0);
-       ++i;
-   }
-} */
 
 Unit MainWindow::GetUnitFromCBox(QComboBox* comboBox)
 {
@@ -180,6 +164,16 @@ Unit MainWindow::GetUnitFromCBox(QComboBox* comboBox)
 
 void MainWindow::on_recalculateButton_clicked()
 {
-
+   // currentRecipe.RefreshIngredients(deleteButtonToIngredientLayoutMap);
 }
 
+void MainWindow::ClearLayout(QLayout* layout)
+{
+    while (layout->count() != 0)
+    {
+        QLayoutItem* item = layout->takeAt(0);
+        delete item->widget();
+        delete item;
+    }
+    delete layout;
+}

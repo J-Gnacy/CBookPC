@@ -51,6 +51,7 @@ private:
 
     void PrepareComboBox(QComboBox* comboBox);
     void DeleteIngredient();
+    void ClearLayout(QLayout* layout);
     Unit GetUnitFromCBox(QComboBox* comboBox);
 
 };
