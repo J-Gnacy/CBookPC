@@ -14,6 +14,7 @@
 #include "recipe.h"
 #include "ingredient.h"
 #include <vector>
+#include <functional>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -49,10 +50,15 @@ private:
     QSpinBox* recalculateSpinBox=nullptr;
     QComboBox* recalculateUnitCBox=nullptr;
 
+    void ForEachInLayoutMap(const std::function<void>& function);
     void PrepareComboBox(QComboBox* comboBox);
     void DeleteIngredient();
+    void DeleteLayout(QLayout* layout);
     void ClearLayout(QLayout* layout);
+    void RefillRecipeLayout();
     Unit GetUnitFromCBox(QComboBox* comboBox);
+    void RefreshRecipeLayout();
+    void ReloadCurrentRecipe();
 
 };
 #endif // MAINWINDOW_H

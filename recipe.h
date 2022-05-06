@@ -10,6 +10,7 @@
 #include <QMap>
 #include <QSpinBox>
 #include <QBoxLayout>
+#include <QList>
 
 class Recipe
 {
@@ -46,6 +47,8 @@ public:
 
     void RecalculateRecipe(float newAmount);
 
+    void RevertToOriginalAmount();
+
     float GetAmount();
 
     QString GetName();
@@ -56,7 +59,7 @@ public:
 
     ~Recipe();
 
-    void RefreshIngredients(QMap<QPushButton*, QHBoxLayout*> OtherMap);
+    void ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &OtherMap);
 
     void ClearIngredientsList();
 

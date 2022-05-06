@@ -27,13 +27,19 @@ void Recipe::RecalculateRecipe(float newAmount)
     ForEachIngredient(recalculateFormula);
 }
 
+void Recipe::RevertToOriginalAmount()
+{
+    RecalculateRecipe(recipeProductAmount);
+}
 
 void Recipe::ForEachIngredient(const std::function<void(Ingredient*)>& func)
 {
-    QMap<QPushButton*, Ingredient*>::const_iterator i = IngredientList.constBegin();
-    while (i != IngredientList.constEnd())
+    QMap<QPushButton*, Ingredient*>::const_iterator iteratorIndex = IngredientList.constBegin();
+    QMap<QPushButton*, Ingredient*>::const_iterator endIterator = IngredientList.constEnd();
+    while (iteratorIndex != endIterator)
     {
-        func(i.value());
+        func(iteratorIndex.value());
+        iteratorIndex++;
     }
 }
 
@@ -72,29 +78,32 @@ void Recipe::DeleteIngredientByKey(QPushButton* key)
     IngredientList.remove(key);
 }
 
-void Recipe::RefreshIngredients(QMap<QPushButton*, QHBoxLayout*> OtherMap)
+void Recipe::ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &OtherMap)
 {
 
-    QPushButton keyButton;
 
     QMap<QPushButton*, QHBoxLayout*>::const_iterator i = OtherMap.constBegin();
-    while (i != OtherMap.constEnd())
+    QMap<QPushButton*, QHBoxLayout*>::const_iterator iteratorEnd = OtherMap.constEnd();
+    while (i != iteratorEnd)
     {
+      QHBoxLayout* ingredientLayout=new QHBoxLayout();
       QHBoxLayout* layout = i.value();
       int currentItemIndex=0;
-      while(currentItemIndex != layout->count())
+      while(layout->count()>0)
       {
-          QWidget* item = layout->takeAt(0)->widget();
-          if (QSpinBox* spinBox = qobject_cast<QSpinBox*>(item))
-              spinBox->setValue(0);
+          QWidget* widget = layout->takeAt(0)->widget();
+
+         /* if (QSpinBox* spinBox = qobject_cast<QSpinBox*>(widget))
+              spinBox->setValue(13);*/
+
+          ingredientLayout->addWidget(widget);
 
           currentItemIndex++;
       }
-
-        ++i;
+      delete layout;
+      OtherMap.insert(i.key(), ingredientLayout);
+      i++;
     }
-
-
 }
 
 void Recipe::ClearIngredientsList()
