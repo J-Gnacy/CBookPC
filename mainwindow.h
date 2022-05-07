@@ -50,7 +50,10 @@ private:
     QSpinBox* recalculateSpinBox=nullptr;
     QComboBox* recalculateUnitCBox=nullptr;
 
-    void ForEachInLayoutMap(const std::function<void>& function);
+    void ForEachInLayoutMap(const std::function<void(QMap<QPushButton*, QHBoxLayout*>::const_iterator&)>& function);
+    void AddLayoutFromMap(QMap<QPushButton*, QHBoxLayout*>::const_iterator &iteratorIndex);
+    void ReloadWidgetFromMap(QMap<QPushButton*, QHBoxLayout*>::const_iterator &iteratorIndex);
+    void RevertRecalculation();
     void PrepareComboBox(QComboBox* comboBox);
     void DeleteIngredient();
     void DeleteLayout(QLayout* layout);
