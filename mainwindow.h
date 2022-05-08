@@ -35,20 +35,31 @@ private slots:
 
     void on_recalculateButton_clicked();
 
+    void on_NewRecipeButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QMap<QPushButton*, QHBoxLayout*> deleteButtonToIngredientLayoutMap;
+
     QComboBox* ingredientUnitComboBox=nullptr;
     QSpinBox* ingredientAmountSpinBox=nullptr;
     QTextEdit* ingredientNameText=nullptr;
-    QLabel* recipeAmountLabel=nullptr;
-    QLabel* recipeNameLabel=nullptr;
+
+    QSpinBox* recipeAmountSpinBox=nullptr;
+    QTextEdit* recipeNameText=nullptr;
     QComboBox* recipeUnitCBox=nullptr;
+
     QComboBox* newRecipeUnitCBox=nullptr;
-    QScrollArea* scrollArea=nullptr;
+    QSpinBox* newRecipeAmountSpinBox=nullptr;
+    QTextEdit* newRecipeNameText=nullptr;
+
+
     QVBoxLayout* recipeLayout=nullptr;
+
     QSpinBox* recalculateSpinBox=nullptr;
     QComboBox* recalculateUnitCBox=nullptr;
+
+    QString recipeListFileName;
 
     void ForEachInLayoutMap(const std::function<void(QMap<QPushButton*, QHBoxLayout*>::const_iterator&)>& function);
     void AddLayoutFromMap(QMap<QPushButton*, QHBoxLayout*>::const_iterator &iteratorIndex);
@@ -62,6 +73,10 @@ private:
     Unit GetUnitFromCBox(QComboBox* comboBox);
     void RefreshRecipeLayout();
     void ReloadCurrentRecipe();
+    void SaveToFile(QString filename, QString text);
+    void AddToFile(QString filename, QString text);
+    QString ReadFromFile(QString filename);
+    void SetRecipeWidgets();
 
 };
 #endif // MAINWINDOW_H

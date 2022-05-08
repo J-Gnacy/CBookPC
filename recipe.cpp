@@ -48,6 +48,15 @@ float Recipe::GetAmount()
     return recipeDesiredAmount;
 }
 
+void Recipe::ClearRecipe()
+{
+    auto removeIngredient = [&](Ingredient* ingredient) {
+        DeleteIngredient(ingredient);
+    };
+
+    ForEachIngredient(removeIngredient);
+}
+
 QMap<QPushButton*, Ingredient*> Recipe::GetIngredientList()
 {
     return IngredientList;
@@ -55,12 +64,7 @@ QMap<QPushButton*, Ingredient*> Recipe::GetIngredientList()
 
 Recipe::~Recipe()
 {
-    auto removeIngredients = [&](Ingredient* ingredient) {
-        DeleteIngredient(ingredient);
-    };
-
-    ForEachIngredient(removeIngredients);
-
+    ClearRecipe();
 }
 
 QString Recipe::GetName()
@@ -78,31 +82,26 @@ void Recipe::DeleteIngredientByKey(QPushButton* key)
     IngredientList.remove(key);
 }
 
-void Recipe::ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &OtherMap)
+void Recipe::ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &otherMap)
 {
 
 
-    QMap<QPushButton*, QHBoxLayout*>::const_iterator i = OtherMap.constBegin();
-    QMap<QPushButton*, QHBoxLayout*>::const_iterator iteratorEnd = OtherMap.constEnd();
-    while (i != iteratorEnd)
+    QMap<QPushButton*, QHBoxLayout*>::const_iterator iteratorIndex = otherMap.constBegin();
+    QMap<QPushButton*, QHBoxLayout*>::const_iterator iteratorEnd = otherMap.constEnd();
+    while (iteratorIndex != iteratorEnd)
     {
       QHBoxLayout* ingredientLayout=new QHBoxLayout();
-      QHBoxLayout* layout = i.value();
+      QHBoxLayout* layout = iteratorIndex.value();
       int currentItemIndex=0;
       while(layout->count()>0)
       {
           QWidget* widget = layout->takeAt(0)->widget();
-
-         /* if (QSpinBox* spinBox = qobject_cast<QSpinBox*>(widget))
-              spinBox->setValue(13);*/
-
           ingredientLayout->addWidget(widget);
-
           currentItemIndex++;
       }
       delete layout;
-      OtherMap.insert(i.key(), ingredientLayout);
-      i++;
+      otherMap.insert(iteratorIndex.key(), ingredientLayout);
+      iteratorIndex++;
     }
 }
 
@@ -111,3 +110,14 @@ void Recipe::ClearIngredientsList()
     IngredientList.clear();
 }
 
+void Recipe::CopyIngredientsList(QMap<QPushButton*, Ingredient*> otherList)
+{
+    ClearIngredientsList();
+
+    QMap<QPushButton*, Ingredient*>::const_iterator iteratorIndex = otherList.constBegin();
+    QMap<QPushButton*, Ingredient*>::const_iterator iteratorEnd = otherList.constEnd();
+    while(iteratorIndex!=iteratorEnd)
+    {
+        IngredientList.insert(iteratorIndex.key(), iteratorIndex.value());
+    }
+}

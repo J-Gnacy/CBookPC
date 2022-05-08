@@ -18,7 +18,7 @@ private:
 
     QMap<QPushButton*, Ingredient*> IngredientList;
 
-    const float recipeProductAmount;
+    float recipeProductAmount;
 
     float recipeDesiredAmount;
 
@@ -27,13 +27,24 @@ private:
     Unit recipeUnit;
 
 
-
 public:
 
     Recipe(float desiredAmount, QString desiredName, Unit desiredUnit)
         :recipeProductAmount(desiredAmount), recipeDesiredAmount(desiredAmount), recipeName(desiredName), recipeUnit(desiredUnit){};
 
-    Recipe& operator=(const Recipe& other);
+    Recipe& operator=(const Recipe& other)
+    {
+        CopyIngredientsList(other.IngredientList);
+        recipeProductAmount=other.recipeProductAmount;
+        recipeDesiredAmount=other.recipeProductAmount;
+        recipeName=other.recipeName;
+        recipeUnit=other.recipeUnit;
+
+        return *this;
+    };
+
+    Recipe(Recipe& other)
+        :recipeProductAmount(other.GetAmount()), recipeDesiredAmount(other.GetAmount()), recipeName(other.GetName()), recipeUnit(other.GetUnit()){};
 
     Recipe();
 
@@ -51,6 +62,8 @@ public:
 
     float GetAmount();
 
+    void ClearRecipe();
+
     QString GetName();
 
     Unit GetUnit();
@@ -59,9 +72,11 @@ public:
 
     ~Recipe();
 
-    void ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &OtherMap);
+    void ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &otherMap);
 
     void ClearIngredientsList();
+
+    void CopyIngredientsList(QMap<QPushButton*, Ingredient*> otherList);
 
 };
 

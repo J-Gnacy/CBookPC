@@ -2,7 +2,11 @@
 #include "ui_mainwindow.h"
 #include <iterator>
 #include <vector>
-
+#include <QStandardPaths>
+#include <QDir>
+#include <QTextStream>
+#include <QFile>
+#include <QMessageBox>
 
  Recipe currentRecipe(100, "Przykładowy przepis", Unit::kg);
 
@@ -13,32 +17,30 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     recipeLayout = qobject_cast<QVBoxLayout*>(ui->recipeArea->layout());
-    ingredientUnitComboBox = qobject_cast<QComboBox*>(ui->ingredientUnitComboBox);
-    PrepareComboBox(ingredientUnitComboBox);
-
     recipeUnitCBox = qobject_cast<QComboBox*>(ui->recipeUnitCBox);
     PrepareComboBox(recipeUnitCBox);
-    recipeUnitCBox->setCurrentIndex(int(currentRecipe.GetUnit()));
-    recipeUnitCBox->setDisabled(true);
+    recipeAmountSpinBox=qobject_cast<QSpinBox*>(ui->recipeAmountSpinBox);
+    recipeNameText=qobject_cast<QTextEdit*>(ui->recipeNameText);
 
-    newRecipeUnitCBox= qobject_cast<QComboBox*>(ui->newRecipeUnitCBox);
-    PrepareComboBox(newRecipeUnitCBox);
+    SetRecipeWidgets();
 
     ingredientAmountSpinBox=qobject_cast<QSpinBox*>(ui->ingredientAmountSpinBox);
     ingredientNameText=qobject_cast<QTextEdit*>(ui->ingredientNameText);
-
-    recipeAmountLabel=qobject_cast<QLabel*>(ui->recipeAmountLabel);
-    recipeNameLabel=qobject_cast<QLabel*>(ui->recipeNameLabel);
-
-    recipeNameLabel->setText(currentRecipe.GetName());
-    recipeAmountLabel->setText(QString::number(currentRecipe.GetAmount()));
+    ingredientUnitComboBox = qobject_cast<QComboBox*>(ui->ingredientUnitComboBox);
+    PrepareComboBox(ingredientUnitComboBox);
 
     recalculateSpinBox=qobject_cast<QSpinBox*>(ui->recalculateSpinBox);
-
     recalculateUnitCBox=qobject_cast<QComboBox*>(ui->recalculateUnitCBox);
     PrepareComboBox(recalculateUnitCBox);
     recalculateUnitCBox->setCurrentIndex(int(currentRecipe.GetUnit()));
     recalculateUnitCBox->setDisabled(true);
+
+    newRecipeUnitCBox= qobject_cast<QComboBox*>(ui->newRecipeUnitCBox);
+    PrepareComboBox(newRecipeUnitCBox);
+    newRecipeAmountSpinBox=qobject_cast<QSpinBox*>(ui->newRecipeSpinBox);
+    newRecipeNameText=qobject_cast<QTextEdit*>(ui->newRecipeNameText);
+
+    recipeListFileName="RecipeList.txt";
 }
 
 MainWindow::~MainWindow()
@@ -56,11 +58,11 @@ MainWindow::~MainWindow()
     delete ingredientUnitComboBox;
     delete ingredientAmountSpinBox;
     delete ingredientNameText;
-    delete recipeAmountLabel;
-    delete recipeNameLabel;
+    delete recipeAmountSpinBox;
+    delete recipeNameText;
     delete recipeUnitCBox;
     delete newRecipeUnitCBox;
-    delete scrollArea;
+
     delete recipeLayout;
     delete recalculateSpinBox;
     delete recalculateUnitCBox;
@@ -245,4 +247,80 @@ void MainWindow::ReloadCurrentRecipe()
     };
 
     ForEachInLayoutMap(ReloadWidget);
+}
+
+void MainWindow::on_NewRecipeButton_clicked()
+{
+    Recipe r(newRecipeAmountSpinBox->value(), newRecipeNameText->toPlainText(), GetUnitFromCBox(newRecipeUnitCBox));
+    currentRecipe.ClearRecipe();
+    currentRecipe=r;
+    auto d = currentRecipe;
+    SetRecipeWidgets();
+
+}
+
+void MainWindow::SaveToFile(QString filename, QString text)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        qCritical()<<file.errorString();
+    }
+
+    QTextStream stream(&file);
+
+    stream<<text;
+
+
+    file.close();
+}
+
+void MainWindow::AddToFile(QString filename, QString text)
+{
+    QFile file(filename);
+    if(!file.exists())
+        return;
+
+    if(!file.open(QIODevice::ReadWrite))
+    {
+        qCritical()<<file.errorString();
+    }
+
+    QTextStream stream(&file);
+
+    QString fileText=stream.readAll();
+
+    stream<<fileText<<"\n"<<text;
+
+    file.close();
+}
+
+QString MainWindow::ReadFromFile(QString filename)
+{
+    QFile file(filename);
+    if(!file.exists())
+        return "File does not exist";
+
+    if(!file.open(QIODevice::ReadWrite))
+    {
+        qCritical()<<file.errorString();
+    }
+
+    QTextStream stream(&file);
+
+    QString fileText=stream.readAll();
+
+    file.close();
+
+    return fileText;
+}
+
+void MainWindow::SetRecipeWidgets()
+{
+    recipeUnitCBox->setCurrentIndex(int(currentRecipe.GetUnit()));
+    recipeUnitCBox->setDisabled(true);
+
+    recipeAmountSpinBox->setValue(currentRecipe.GetAmount());
+
+    recipeNameText->setText(currentRecipe.GetName());
 }
