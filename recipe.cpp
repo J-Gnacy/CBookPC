@@ -1,4 +1,5 @@
 #include "recipe.h"
+#include <QJsonObject>
 
 void Recipe::AddIngredient(QString name, float amount, Unit unitUsed, QPushButton* key)
 {
@@ -120,4 +121,22 @@ void Recipe::CopyIngredientsList(QMap<QPushButton*, Ingredient*> otherList)
     {
         IngredientList.insert(iteratorIndex.key(), iteratorIndex.value());
     }
+}
+
+void Recipe::ReadFromJson(const QJsonObject &json)
+{
+    if (json.contains("recipeName") && json["recipeName"].isString())
+        recipeName = json["name"].toString();
+
+    if (json.contains("recipeProductAmount") && json["recipeProductAmount"].isDouble())
+        recipeProductAmount = json["level"].toInt();
+
+    recipeDesiredAmount = recipeProductAmount;
+}
+
+void Recipe::WriteToJSon(QJsonObject &json)
+{
+    json["recipeName"] = recipeName;
+    json["recipeProductAmount"] = recipeProductAmount;
+    json["recipeDesiredAmount"] = recipeDesiredAmount;
 }

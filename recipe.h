@@ -78,6 +78,10 @@ public:
 
     void CopyIngredientsList(QMap<QPushButton*, Ingredient*> otherList);
 
+    void ReadFromJson(const QJsonObject &json);
+
+    void WriteToJSon(QJsonObject &json);
+
 };
 
 #endif // RECIPE_H

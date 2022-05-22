@@ -12,12 +12,14 @@ SOURCES += \
     ingredient.cpp \
     main.cpp \
     mainwindow.cpp \
-    recipe.cpp
+    recipe.cpp \
+    recipefilemanager.cpp
 
 HEADERS += \
     ingredient.h \
     mainwindow.h \
-    recipe.h
+    recipe.h \
+    recipefilemanager.h
 
 FORMS += \
     mainwindow.ui

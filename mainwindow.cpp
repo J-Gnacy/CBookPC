@@ -7,6 +7,11 @@
 #include <QTextStream>
 #include <QFile>
 #include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QByteArray>
+#include "recipefilemanager.h"
 
  Recipe currentRecipe(100, "Przykładowy przepis", Unit::kg);
 
@@ -40,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     newRecipeAmountSpinBox=qobject_cast<QSpinBox*>(ui->newRecipeSpinBox);
     newRecipeNameText=qobject_cast<QTextEdit*>(ui->newRecipeNameText);
 
-    recipeListFileName="RecipeList.txt";
+    recipeListFileName="RecipeList.json";
 }
 
 MainWindow::~MainWindow()
@@ -254,65 +259,8 @@ void MainWindow::on_NewRecipeButton_clicked()
     Recipe r(newRecipeAmountSpinBox->value(), newRecipeNameText->toPlainText(), GetUnitFromCBox(newRecipeUnitCBox));
     currentRecipe.ClearRecipe();
     currentRecipe=r;
-    auto d = currentRecipe;
     SetRecipeWidgets();
 
-}
-
-void MainWindow::SaveToFile(QString filename, QString text)
-{
-    QFile file(filename);
-    if(!file.open(QIODevice::WriteOnly))
-    {
-        qCritical()<<file.errorString();
-    }
-
-    QTextStream stream(&file);
-
-    stream<<text;
-
-
-    file.close();
-}
-
-void MainWindow::AddToFile(QString filename, QString text)
-{
-    QFile file(filename);
-    if(!file.exists())
-        return;
-
-    if(!file.open(QIODevice::ReadWrite))
-    {
-        qCritical()<<file.errorString();
-    }
-
-    QTextStream stream(&file);
-
-    QString fileText=stream.readAll();
-
-    stream<<fileText<<"\n"<<text;
-
-    file.close();
-}
-
-QString MainWindow::ReadFromFile(QString filename)
-{
-    QFile file(filename);
-    if(!file.exists())
-        return "File does not exist";
-
-    if(!file.open(QIODevice::ReadWrite))
-    {
-        qCritical()<<file.errorString();
-    }
-
-    QTextStream stream(&file);
-
-    QString fileText=stream.readAll();
-
-    file.close();
-
-    return fileText;
 }
 
 void MainWindow::SetRecipeWidgets()
@@ -324,3 +272,21 @@ void MainWindow::SetRecipeWidgets()
 
     recipeNameText->setText(currentRecipe.GetName());
 }
+
+void MainWindow::on_saveButton_clicked()
+{
+    RecipeFileManager saveFileManager;
+    QJsonArray RecipeNameArray;
+
+    saveFileManager.FileToQJsonArray(recipeListFileName, RecipeNameArray);
+
+    saveFileManager.AddToRecipeNameList(currentRecipe.GetName());
+    saveFileManager.RecipeNameListToQJsonArray(RecipeNameArray);
+
+    saveFileManager.QJsonArrayToRecipeNameList(RecipeNameArray);
+
+    saveFileManager.SaveQJsonArrayToFile(recipeListFileName, RecipeNameArray);
+    saveFileManager.SaveRecipeToFile(currentRecipe);
+
+}
+
