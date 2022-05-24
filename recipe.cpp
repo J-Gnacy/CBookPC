@@ -1,5 +1,6 @@
 #include "recipe.h"
 #include <QJsonObject>
+#include <QJsonArray>
 
 void Recipe::AddIngredient(QString name, float amount, Unit unitUsed, QPushButton* key)
 {
@@ -131,6 +132,11 @@ void Recipe::ReadFromJson(const QJsonObject &json)
     if (json.contains("recipeProductAmount") && json["recipeProductAmount"].isDouble())
         recipeProductAmount = json["level"].toInt();
 
+    if(json.contains("recipeUnit") && json["recipeUnit"].isDouble())
+    {
+        int preconvertedUnit = json["recipeUnit"].toInt();
+    }
+
     recipeDesiredAmount = recipeProductAmount;
 }
 
@@ -139,4 +145,19 @@ void Recipe::WriteToJSon(QJsonObject &json)
     json["recipeName"] = recipeName;
     json["recipeProductAmount"] = recipeProductAmount;
     json["recipeDesiredAmount"] = recipeDesiredAmount;
+    json["recipeUnit"] =  int(recipeUnit);
+
+    QJsonArray ingredientArray;
+    int count = IngredientList.size();
+    for(const Ingredient& ingredient : IngredientList)
+    {
+        QJsonObject ingredientObject;
+
+        ingredientObject["ingredientName"] = ingredient.name;
+        ingredientObject["ingredientAmount"] = ingredient.amount;
+        ingredientObject["ingredientUnit"] = int(ingredient.usedUnit);
+
+        ingredientArray.append(ingredientObject);
+    }
+    json["ingredientsList"] = ingredientArray;
 }

@@ -154,7 +154,7 @@ void RecipeFileManager::SaveQJsonArrayToFile(QString filename, QJsonArray Recipe
     SaveToFile(filename, jsonRecipeListDoc.toJson(QJsonDocument::Indented));
 }
 
-void RecipeFileManager::SaveRecipeToFile(Recipe recipe)
+void RecipeFileManager::SaveRecipeToFile(Recipe &recipe)
 {
     QJsonObject jsonRecipeObj;
     QJsonDocument jsonRecipeDoc;

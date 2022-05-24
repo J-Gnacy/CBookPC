@@ -99,6 +99,8 @@ void MainWindow::on_addIngredient_clicked()
     deleteButtonToIngredientLayoutMap.insert(deleteIngredientButton, ingredientLayout);
     currentRecipe.AddIngredient(ingredientNameText->toPlainText(), ingredientAmountSpinBox->value(), GetUnitFromCBox(ingredientUnitComboBox), deleteIngredientButton);
 
+    auto xd = currentRecipe.GetIngredientList();
+    int count = xd.count();
     ingredientLayout->addWidget(ingredientName);
     ingredientLayout->addWidget(ingredientAmount);
     ingredientLayout->addWidget(ingredientUnit);
@@ -260,6 +262,8 @@ void MainWindow::on_NewRecipeButton_clicked()
     currentRecipe.ClearRecipe();
     currentRecipe=r;
     SetRecipeWidgets();
+    RefreshRecipeLayout();
+    deleteButtonToIngredientLayoutMap.clear();
 
 }
 

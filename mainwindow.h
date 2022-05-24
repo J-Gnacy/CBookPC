@@ -79,5 +79,6 @@ private:
 
     void SetRecipeWidgets();
 
+
 };
 #endif // MAINWINDOW_H

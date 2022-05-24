@@ -41,7 +41,7 @@ public:
 
     void SaveQJsonArrayToFile(QString filename, QJsonArray RecipeNameArray);
 
-    void SaveRecipeToFile(Recipe recipe);
+    void SaveRecipeToFile(Recipe& recipe);
 
 
 private:
