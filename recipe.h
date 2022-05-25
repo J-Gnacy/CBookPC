@@ -16,7 +16,7 @@ class Recipe
 {
 private:
 
-    QMap<QPushButton*, Ingredient*> IngredientList;
+    QVector<Ingredient*> IngredientVector;
 
     float recipeProductAmount;
 
@@ -34,7 +34,7 @@ public:
 
     Recipe& operator=(const Recipe& other)
     {
-        CopyIngredientsList(other.IngredientList);
+        CopyIngredientsVector(other.IngredientVector);
         recipeProductAmount=other.recipeProductAmount;
         recipeDesiredAmount=other.recipeProductAmount;
         recipeName=other.recipeName;
@@ -48,13 +48,17 @@ public:
 
     Recipe();
 
-    void AddIngredient(QString name, float amount, Unit unitUsed, QPushButton* key);
+    void AddIngredient(QString name, float amount, Unit unitUsed);
 
     void ForEachIngredient(const std::function<void(Ingredient*)>& func);
 
     void DeleteIngredient(Ingredient* ingredient);
 
-    void DeleteIngredientByKey(QPushButton* key);
+    bool IsIngredientInRecipe(QString name);
+
+    int SearchIngredientByName(QString name);
+
+    void DeleteIngredientByName(QString name);
 
     void RecalculateRecipe(float newAmount);
 
@@ -68,7 +72,7 @@ public:
 
     Unit GetUnit();
 
-    QMap<QPushButton*, Ingredient*> GetIngredientList();
+    QVector<Ingredient*> GetIngredientVector();
 
     ~Recipe();
 
@@ -76,7 +80,7 @@ public:
 
     void ClearIngredientsList();
 
-    void CopyIngredientsList(QMap<QPushButton*, Ingredient*> otherList);
+    void CopyIngredientsVector(QVector<Ingredient*> otherVector);
 
     void ReadFromJson(const QJsonObject &json);
 

@@ -13,7 +13,7 @@
 #include <QByteArray>
 #include "recipefilemanager.h"
 
- Recipe currentRecipe(100, "Przykładowy przepis", Unit::kg);
+ Recipe currentRecipe(100, "Przykladowy przepis", Unit::kg);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -80,7 +80,14 @@ void MainWindow::on_addIngredient_clicked()
 
     QHBoxLayout* ingredientLayout=new QHBoxLayout();
 
-    QTextEdit* ingredientName=new QTextEdit(ingredientNameText->toPlainText());
+    QString newName = ingredientNameText->toPlainText();
+    bool ingredientAlreadyIn = currentRecipe.IsIngredientInRecipe(newName);
+    if(ingredientAlreadyIn)
+    {
+        newName = newName + QString::number((deleteButtonToIngredientLayoutMap.count()));
+    }
+
+    QTextEdit* ingredientName=new QTextEdit(newName);
     ingredientName->setFixedSize(100,30);
     ingredientName->setDisabled(true);
 
@@ -97,10 +104,8 @@ void MainWindow::on_addIngredient_clicked()
     QObject::connect(deleteIngredientButton, &QPushButton::clicked, this, &MainWindow::DeleteIngredient);
 
     deleteButtonToIngredientLayoutMap.insert(deleteIngredientButton, ingredientLayout);
-    currentRecipe.AddIngredient(ingredientNameText->toPlainText(), ingredientAmountSpinBox->value(), GetUnitFromCBox(ingredientUnitComboBox), deleteIngredientButton);
+    currentRecipe.AddIngredient(newName, ingredientAmountSpinBox->value(), GetUnitFromCBox(ingredientUnitComboBox));
 
-    auto xd = currentRecipe.GetIngredientList();
-    int count = xd.count();
     ingredientLayout->addWidget(ingredientName);
     ingredientLayout->addWidget(ingredientAmount);
     ingredientLayout->addWidget(ingredientUnit);
@@ -114,6 +119,7 @@ void MainWindow::ForEachInLayoutMap(const std::function<void(QMap<QPushButton*, 
 {
     QMap<QPushButton*, QHBoxLayout*>::const_iterator iteratorIndex = deleteButtonToIngredientLayoutMap.constBegin();
     QMap<QPushButton*, QHBoxLayout*>::const_iterator endIterator = deleteButtonToIngredientLayoutMap.constEnd();
+    int count = deleteButtonToIngredientLayoutMap.count();
         while (iteratorIndex !=endIterator)
         {
           function(iteratorIndex);
@@ -129,11 +135,19 @@ void MainWindow::AddLayoutFromMap(QMap<QPushButton*, QHBoxLayout*>::const_iterat
 
 void MainWindow::ReloadWidgetFromMap(QMap<QPushButton*, QHBoxLayout*>::const_iterator& iteratorIndex)
 {
-    auto IngredientList = currentRecipe.GetIngredientList();
-    Ingredient ingredient = IngredientList.find(iteratorIndex.key()).value();
-    QLayout* layout = iteratorIndex.value();
-    int layoutItemCount = layout->count();
-    int layoutItemIndex=0;
+     auto IngredientList = currentRecipe.GetIngredientVector();
+
+     int count = deleteButtonToIngredientLayoutMap.count();
+     auto iterator = iteratorIndex;
+
+     QLayout* layout = iteratorIndex.value();
+     int layoutItemCount = layout->count();
+     int layoutItemIndex=0;
+
+     QString name = GetIngredientNameByButton(iteratorIndex.key());
+     int ingredientIndex = currentRecipe.SearchIngredientByName(name);
+     auto ingredientVector = currentRecipe.GetIngredientVector();
+     Ingredient ingredient = ingredientVector[ingredientIndex];
 
     while(layoutItemIndex<layoutItemCount)
     {
@@ -177,10 +191,15 @@ void MainWindow::DeleteIngredient()
     QPushButton* button = qobject_cast<QPushButton*>(sender());
     QHBoxLayout* layout = deleteButtonToIngredientLayoutMap.take(button);
 
-    DeleteLayout(layout);
-
-    currentRecipe.DeleteIngredientByKey(button);
+    while (layout->count() != 0)
+    {
+        QWidget* widget = layout->takeAt(0)->widget();
+        if(QTextEdit* ingredientNameText = qobject_cast<QTextEdit*>(widget))
+            currentRecipe.DeleteIngredientByName(ingredientNameText->toPlainText());
+        delete widget;
+    }
     deleteButtonToIngredientLayoutMap.remove(button);
+    delete layout;
 }
 
 
@@ -264,7 +283,6 @@ void MainWindow::on_NewRecipeButton_clicked()
     SetRecipeWidgets();
     RefreshRecipeLayout();
     deleteButtonToIngredientLayoutMap.clear();
-
 }
 
 void MainWindow::SetRecipeWidgets()
@@ -292,5 +310,19 @@ void MainWindow::on_saveButton_clicked()
     saveFileManager.SaveQJsonArrayToFile(recipeListFileName, RecipeNameArray);
     saveFileManager.SaveRecipeToFile(currentRecipe);
 
+}
+
+QString MainWindow::GetIngredientNameByButton(QPushButton* button)
+{
+    QHBoxLayout* layout = deleteButtonToIngredientLayoutMap.value(button);
+
+    int index=0;
+    while (index<layout->count())
+    {
+        QWidget* widget = layout->itemAt(index)->widget();
+        if(QTextEdit* ingredientNameText = qobject_cast<QTextEdit*>(widget))
+            return ingredientNameText->toPlainText();
+        index++;
+    }
 }
 

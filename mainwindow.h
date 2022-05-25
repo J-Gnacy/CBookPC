@@ -79,6 +79,8 @@ private:
 
     void SetRecipeWidgets();
 
+    QString GetIngredientNameByButton(QPushButton* button);
+
 
 };
 #endif // MAINWINDOW_H

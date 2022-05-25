@@ -2,14 +2,12 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-void Recipe::AddIngredient(QString name, float amount, Unit unitUsed, QPushButton* key)
+void Recipe::AddIngredient(QString name, float amount, Unit unitUsed)
 {
-
     Ingredient* newIngredient = new Ingredient(name, amount, unitUsed);
-    IngredientList.insert(key, newIngredient);
-
-
+    IngredientVector.push_back(newIngredient);
 }
+
 void Recipe::DeleteIngredient(Ingredient* ingredient)
 {
     delete ingredient;
@@ -35,13 +33,10 @@ void Recipe::RevertToOriginalAmount()
 }
 
 void Recipe::ForEachIngredient(const std::function<void(Ingredient*)>& func)
-{
-    QMap<QPushButton*, Ingredient*>::const_iterator iteratorIndex = IngredientList.constBegin();
-    QMap<QPushButton*, Ingredient*>::const_iterator endIterator = IngredientList.constEnd();
-    while (iteratorIndex != endIterator)
+{    
+    for (int i = 0; i < IngredientVector.size(); i++)
     {
-        func(iteratorIndex.value());
-        iteratorIndex++;
+        func(IngredientVector[i]);
     }
 }
 
@@ -59,9 +54,9 @@ void Recipe::ClearRecipe()
     ForEachIngredient(removeIngredient);
 }
 
-QMap<QPushButton*, Ingredient*> Recipe::GetIngredientList()
+QVector<Ingredient*> Recipe::GetIngredientVector()
 {
-    return IngredientList;
+    return IngredientVector;
 }
 
 Recipe::~Recipe()
@@ -79,9 +74,35 @@ Unit Recipe::GetUnit()
     return recipeUnit;
 }
 
-void Recipe::DeleteIngredientByKey(QPushButton* key)
+bool Recipe::IsIngredientInRecipe(QString name)
 {
-    IngredientList.remove(key);
+    for (int i = 0; i < IngredientVector.size(); i++)
+    {
+        if(name==IngredientVector[i]->GetName())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+int Recipe::SearchIngredientByName(QString name)
+{
+    for (int i = 0; i < IngredientVector.size(); i++)
+    {
+        if(name==IngredientVector[i]->GetName())
+        {
+            return i;
+        }
+    }
+}
+
+void Recipe::DeleteIngredientByName(QString name)
+{
+
+    if(IsIngredientInRecipe(name))
+        IngredientVector.removeAt(SearchIngredientByName(name));
+
 }
 
 void Recipe::ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &otherMap)
@@ -109,18 +130,15 @@ void Recipe::ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &otherMap)
 
 void Recipe::ClearIngredientsList()
 {
-    IngredientList.clear();
+    IngredientVector.clear();
 }
 
-void Recipe::CopyIngredientsList(QMap<QPushButton*, Ingredient*> otherList)
+void Recipe::CopyIngredientsVector(QVector<Ingredient*> otherVector)
 {
-    ClearIngredientsList();
-
-    QMap<QPushButton*, Ingredient*>::const_iterator iteratorIndex = otherList.constBegin();
-    QMap<QPushButton*, Ingredient*>::const_iterator iteratorEnd = otherList.constEnd();
-    while(iteratorIndex!=iteratorEnd)
+    ClearIngredientsList();    
+    for (int i = 0; i < otherVector.size(); i++)
     {
-        IngredientList.insert(iteratorIndex.key(), iteratorIndex.value());
+        IngredientVector.push_back(otherVector[i]);
     }
 }
 
@@ -148,8 +166,8 @@ void Recipe::WriteToJSon(QJsonObject &json)
     json["recipeUnit"] =  int(recipeUnit);
 
     QJsonArray ingredientArray;
-    int count = IngredientList.size();
-    for(const Ingredient& ingredient : IngredientList)
+    int count = IngredientVector.size();
+    for(const Ingredient& ingredient : IngredientVector)
     {
         QJsonObject ingredientObject;
 
