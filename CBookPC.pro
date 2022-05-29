@@ -10,15 +10,21 @@ CONFIG += c++17
 
 SOURCES += \
     ingredient.cpp \
+    ingredientlayout.cpp \
+    layoutmanager.cpp \
     main.cpp \
     mainwindow.cpp \
     recipe.cpp \
+    recipechoicelayout.cpp \
     recipefilemanager.cpp
 
 HEADERS += \
     ingredient.h \
+    ingredientlayout.h \
+    layoutmanager.h \
     mainwindow.h \
     recipe.h \
+    recipechoicelayout.h \
     recipefilemanager.h
 
 FORMS += \

@@ -72,11 +72,13 @@ public:
 
     Unit GetUnit();
 
+    static Unit GetUnitFromInt(int index);
+
     QVector<Ingredient*> GetIngredientVector();
 
     ~Recipe();
 
-    void ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &otherMap);
+    void ReloadIngredientsInMap(QHash<QPushButton*, QHBoxLayout*> &otherMap);
 
     void ClearIngredientsList();
 

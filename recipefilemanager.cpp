@@ -91,6 +91,35 @@ void RecipeFileManager::QJsonArrayToRecipeNameList(QJsonArray RecipeNameArray)
     }
 }
 
+QVector<Ingredient*> RecipeFileManager::QJsonArrayToIngredientVector(QJsonArray ingredientArray)
+{
+    QVector<Ingredient*>ingredientVector;
+    int size = ingredientArray.size();
+
+    for(int ingredientIndex=0; ingredientIndex<ingredientArray.size(); ingredientIndex++)
+    {
+        QString ingredientName="initialized unsuccesfully";
+        int ingredientAmount=0;
+        Unit ingredientUnit=Unit::szt;
+        QJsonObject ingredientObject = ingredientArray[ingredientIndex].toObject();
+
+        if(ingredientObject.contains("ingredientName")&&ingredientObject["ingredientName"].isString())
+            ingredientName=ingredientObject["ingredientName"].toString();
+
+        if(ingredientObject.contains("ingredientAmount")&&ingredientObject["ingredientAmount"].isDouble())
+            ingredientAmount=ingredientObject["ingredientAmount"].toDouble();
+
+        if(ingredientObject.contains("ingredientUnit")&&ingredientObject["ingredientUnit"].isDouble())
+            ingredientUnit=Recipe::GetUnitFromInt(ingredientObject["ingredientUnit"].toDouble());
+
+        Ingredient* newIngredient = new Ingredient(ingredientName, ingredientAmount, ingredientUnit);
+
+        ingredientVector.push_back(newIngredient);
+    }
+
+    return ingredientVector;
+}
+
 bool RecipeFileManager::FileToQJsonArray(QString recipeListFileName, QJsonArray &RecipeNameArray)
 {
     bool succesStatus=false;
@@ -154,13 +183,26 @@ void RecipeFileManager::SaveQJsonArrayToFile(QString filename, QJsonArray Recipe
     SaveToFile(filename, jsonRecipeListDoc.toJson(QJsonDocument::Indented));
 }
 
-void RecipeFileManager::SaveRecipeToFile(Recipe &recipe)
+void RecipeFileManager::SaveRecipeToFile(Recipe *recipe)
 {
     QJsonObject jsonRecipeObj;
     QJsonDocument jsonRecipeDoc;
-    recipe.WriteToJSon(jsonRecipeObj);
+    recipe->WriteToJSon(jsonRecipeObj);
     jsonRecipeDoc.setObject(jsonRecipeObj);
-    QString filename = recipe.GetName() + ".json";
+    QString filename = recipe->GetName() + ".json";
     SaveToFile(filename, jsonRecipeDoc.toJson(QJsonDocument::Indented));
 }
 
+QVector<QString> RecipeFileManager::GetRecipeNameList()
+{
+    return RecipeNameList;
+}
+
+QVector<QString> RecipeFileManager::LoadRecipeNameList()
+{
+    QJsonArray nameArray;
+    FileToQJsonArray("RecipeList.json", nameArray);
+    QJsonArrayToRecipeNameList(nameArray);
+    return RecipeNameList;
+
+}

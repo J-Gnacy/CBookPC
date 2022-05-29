@@ -15,6 +15,7 @@
 #include "ingredient.h"
 #include <vector>
 #include <functional>
+#include <layoutmanager.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -39,45 +40,46 @@ private slots:
 
     void on_saveButton_clicked();
 
+    void on_LoadButton_clicked();
+
 private:
     Ui::MainWindow *ui;
-    QMap<QPushButton*, QHBoxLayout*> deleteButtonToIngredientLayoutMap;
 
-    QComboBox* ingredientUnitComboBox=nullptr;
-    QSpinBox* ingredientAmountSpinBox=nullptr;
-    QTextEdit* ingredientNameText=nullptr;
+    QScopedPointer<LayoutManager> layoutManager;
 
-    QSpinBox* recipeAmountSpinBox=nullptr;
-    QTextEdit* recipeNameText=nullptr;
-    QComboBox* recipeUnitCBox=nullptr;
+    QSharedPointer<Recipe> currentRecipe;
+    QSharedPointer<QLabel> infoLabel;
+    QSharedPointer<QVBoxLayout> recipeLayout;
 
-    QComboBox* newRecipeUnitCBox=nullptr;
-    QSpinBox* newRecipeAmountSpinBox=nullptr;
-    QTextEdit* newRecipeNameText=nullptr;
+    QScopedPointer<QComboBox> ingredientUnitComboBox;
+    QScopedPointer<QSpinBox> ingredientAmountSpinBox;
+    QScopedPointer<QTextEdit> ingredientNameText;
+
+    QScopedPointer<QSpinBox> recipeAmountSpinBox;
+    QScopedPointer<QTextEdit> recipeNameText;
+    QScopedPointer<QComboBox> recipeUnitCBox;
+
+    QScopedPointer<QComboBox> newRecipeUnitCBox;
+    QScopedPointer<QSpinBox> newRecipeAmountSpinBox;
+    QScopedPointer<QTextEdit> newRecipeNameText;
 
 
-    QVBoxLayout* recipeLayout=nullptr;
-
-    QSpinBox* recalculateSpinBox=nullptr;
-    QComboBox* recalculateUnitCBox=nullptr;
+    QScopedPointer<QSpinBox> recalculateSpinBox;
+    QScopedPointer<QComboBox> recalculateUnitCBox;
 
     QString recipeListFileName;
-    QVector<QString> RecipeNameList;
 
-    void ForEachInLayoutMap(const std::function<void(QMap<QPushButton*, QHBoxLayout*>::const_iterator&)>& function);
-    void AddLayoutFromMap(QMap<QPushButton*, QHBoxLayout*>::const_iterator &iteratorIndex);
-    void ReloadWidgetFromMap(QMap<QPushButton*, QHBoxLayout*>::const_iterator &iteratorIndex);
     void RevertRecalculation();
-    void PrepareComboBox(QComboBox* comboBox);
-    void DeleteIngredient();
-    void DeleteLayout(QLayout* layout);
-    void ClearLayout(QLayout* layout);
-    void RefillRecipeLayout();
+    void ClearRecipeLayout();
     Unit GetUnitFromCBox(QComboBox* comboBox);
-    void RefreshRecipeLayout();
-    void ReloadCurrentRecipe();
+    void LoadRecipeListToRecipeLayout();
+    void LoadRecipe();
+
+    void SaveRecipe();
 
     void SetRecipeWidgets();
+
+
 
     QString GetIngredientNameByButton(QPushButton* button);
 

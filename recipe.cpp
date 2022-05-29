@@ -1,6 +1,7 @@
 #include "recipe.h"
 #include <QJsonObject>
 #include <QJsonArray>
+#include "recipefilemanager.h"
 
 void Recipe::AddIngredient(QString name, float amount, Unit unitUsed)
 {
@@ -74,6 +75,25 @@ Unit Recipe::GetUnit()
     return recipeUnit;
 }
 
+Unit Recipe::GetUnitFromInt(int index)
+{
+    switch(index)
+    {
+    case 0:
+        return Unit::g;
+    case 1:
+        return Unit::kg;
+    case 2:
+        return Unit::l;
+    case 3:
+        return Unit::ml;
+    case 4:
+        return Unit::szt;
+    default:
+        return Unit::szt;
+    }
+}
+
 bool Recipe::IsIngredientInRecipe(QString name)
 {
     for (int i = 0; i < IngredientVector.size(); i++)
@@ -99,18 +119,15 @@ int Recipe::SearchIngredientByName(QString name)
 
 void Recipe::DeleteIngredientByName(QString name)
 {
-
+    bool xd =IsIngredientInRecipe(name);
     if(IsIngredientInRecipe(name))
         IngredientVector.removeAt(SearchIngredientByName(name));
-
 }
 
-void Recipe::ReloadIngredientsInMap(QMap<QPushButton*, QHBoxLayout*> &otherMap)
+void Recipe::ReloadIngredientsInMap(QHash<QPushButton*, QHBoxLayout*> &otherMap)
 {
-
-
-    QMap<QPushButton*, QHBoxLayout*>::const_iterator iteratorIndex = otherMap.constBegin();
-    QMap<QPushButton*, QHBoxLayout*>::const_iterator iteratorEnd = otherMap.constEnd();
+    QHash<QPushButton*, QHBoxLayout*>::const_iterator iteratorIndex = otherMap.constBegin();
+    QHash<QPushButton*, QHBoxLayout*>::const_iterator iteratorEnd = otherMap.constEnd();
     while (iteratorIndex != iteratorEnd)
     {
       QHBoxLayout* ingredientLayout=new QHBoxLayout();
@@ -144,15 +161,24 @@ void Recipe::CopyIngredientsVector(QVector<Ingredient*> otherVector)
 
 void Recipe::ReadFromJson(const QJsonObject &json)
 {
+    QJsonArray ingredientArray;
     if (json.contains("recipeName") && json["recipeName"].isString())
-        recipeName = json["name"].toString();
+        recipeName = json["recipeName"].toString();
 
     if (json.contains("recipeProductAmount") && json["recipeProductAmount"].isDouble())
-        recipeProductAmount = json["level"].toInt();
+        recipeProductAmount = json["recipeProductAmount"].toInt();
 
     if(json.contains("recipeUnit") && json["recipeUnit"].isDouble())
     {
         int preconvertedUnit = json["recipeUnit"].toInt();
+        recipeUnit = GetUnitFromInt(preconvertedUnit);
+    }
+
+    if(json.contains("ingredientsList")&&json["ingredientsList"].isArray())
+    {
+      ingredientArray=json["ingredientsList"].toArray();
+      RecipeFileManager LoadRecipeManager;
+      CopyIngredientsVector(LoadRecipeManager.QJsonArrayToIngredientVector(ingredientArray));
     }
 
     recipeDesiredAmount = recipeProductAmount;

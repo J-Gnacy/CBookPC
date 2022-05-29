@@ -33,6 +33,8 @@ public:
 
     void QJsonArrayToRecipeNameList(QJsonArray RecipeNameArray);
 
+    QVector<Ingredient*> QJsonArrayToIngredientVector(QJsonArray ingredientArray);
+
     void RecipeNameListToQJsonArray(QJsonArray &RecipeNameArray);
 
     void AddNameToQJsonArray(QJsonArray &RecipeNameArray, QString name);
@@ -41,7 +43,11 @@ public:
 
     void SaveQJsonArrayToFile(QString filename, QJsonArray RecipeNameArray);
 
-    void SaveRecipeToFile(Recipe& recipe);
+    void SaveRecipeToFile(Recipe* recipe);
+
+    QVector<QString> GetRecipeNameList();
+
+    QVector<QString> LoadRecipeNameList();
 
 
 private:
